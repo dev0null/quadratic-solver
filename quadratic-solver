@@ -1,0 +1,126 @@
+#!/bin/bash
+set -e
+
+base_name=$(basename $0)
+body=$1
+
+main(){
+	case $1 in
+		"") read -e -p "Type the equation here: " body ;; # equation body
+		-h|--help) help ;;
+	esac
+
+	dissect_body
+}
+
+
+typewriter(){
+    text="$1"
+    delay="0.02"
+
+    for (( i=0; i < ${#text}; ++i )) do
+        echo -n "${text:$i:1}"
+        sleep ${delay}
+    done
+    echo
+}
+
+print_results(){
+	printf "R1 = %.${scale}f\n" $root_1
+	printf "R2 = %.${scale}f\n" $root_2
+
+	if [ $delta -gt 0 ]; then
+		typewriter "Delta is POSITIVE. It means that there are 2 unique solutions"
+	else
+		typewriter "Delta is equal to ZERO. The solutions match (1 solution)"
+	fi
+}
+
+discriminant(){
+	# Calculate delta
+	delta=$(echo "($b^2)-(4*($a)*($c))" | bc -l)
+	typewriter "Delta = $delta"
+
+	# Result for negative delta
+	if [[ $delta -lt 0 ]]; then
+		typewriter "[IMPOSSIBLE] There is no solution within the set of Real numbers."
+		exit 0
+	fi
+	
+	# Calculate results for delta >= 0
+	calculate_roots
+	print_results
+}
+
+calculate_roots(){
+	scale=6 # decimal places
+	root_1=$(echo "scale=${scale}; (-($b) + sqrt($delta)) / (2*$a)" | bc -l)
+	root_2=$(echo "scale=${scale}; (-($b) - sqrt($delta)) / (2*$a)" | bc -l)
+}
+
+dissect_body(){
+	# Used for arguments isolation
+	local delimiter='|'
+	
+	# format equation body as a|b|c|=0 or |-a|-b|-c|=0, put a delimiter before every '+-<>=' sign
+	local tmp_body=$(echo $body | tr -d '[:space:]' | sed "s/\([a-z]^2\)//g; s/[+-<>=]/$delimiter&/g; s/[a-z]//; s/+//g")
+
+	# Make sure that all coefficients are present; otherwise exit
+	n_tmp=$(echo "$tmp_body" | tr -dc '0-9' | wc -c)
+	[ $((n_tmp)) -lt 3 ] && echo "Error: less than 3 coefficients found. Try wrapping the equation in double quotes" && exit
+
+	# Check if the leading coefficient of the equation is negative
+	# Extract coefficients from the equation and store inside variables a,b,c
+	if [ $(echo $body | cut -c1) == "-" ]; then
+		# start from the second character, jumping over the delimiter when the leading coefficient is negative
+		local let j=1
+		for i in a b c; do
+			j=$((++j));
+			let $i=$(echo $tmp_body | cut -d"$delimiter" -f $j)
+		done
+	else
+		for i in a b c; do
+			local let j=$((++j))
+			let $i=$(echo $tmp_body | cut -d"$delimiter" -f $j)
+		done
+	fi
+
+	if [ ! -z $a -a $a -ne 0 ]; then
+		echo "Coefficients: [ a = $a, b = $b, c = $c ]"
+		discriminant
+	else
+		help
+	fi
+}
+
+help(){
+	cat <<EOF
+Usage: ./$base_name OPTION
+       ./$base_name "-2k^2 - 5k + 4"
+
+Options:
+  -h, --help	Show this help message
+
+The equation must adhere to the following rules:
+ 1. the equation must be submitted in the standard form: ax^2 +bx + c
+
+ 2. the coefficients MUST be explicit when equal to 1:
+      x^2 + x + 5 = 0, should be written as 1x^2 + 1x + 5 = 0
+
+ 3. the leading coefficient MUST be a non-zero value 
+
+ 4. the right member MUST be 0 and CAN be omitted:
+
+Example of some correct inputs:
+
+ Without spaces and with right member
+    2x^2-5x+4=0
+
+ With spaces, no right member
+    -2k^2 - 5k + 4
+
+EOF
+}
+
+
+main "$@"; exit
