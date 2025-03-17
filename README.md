@@ -1,5 +1,6 @@
 # Description
 Shell script utility that solve quadratic equations by using the quadratic formula inside the **Real numbers set** (no complex roots).
+
 $$
 x = \frac{-b ± \sqrt{b^2 - 4ac}}{2a}
 $$
