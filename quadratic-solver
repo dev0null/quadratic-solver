@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env	bash
 set -e
 
 base_name=$(basename $0)
@@ -61,10 +61,9 @@ calculate_roots(){
 dissect_body(){
 	# Used for arguments isolation
 	local delimiter='|'
-echo "[DEBUG] body: $body"
+
 	# format equation body as a|b|c|=0 or |-a|-b|-c|=0, put a delimiter before every '+-<>=' sign
 	local tmp_body=$(echo $body | tr -d '[:space:]' | sed "s/\([a-zA-Z]^2\)//g; s/[+-<>=]/$delimiter&/g; s/[a-zA-Z]//; s/+//g")
-echo "[DEBUG] tmp_body: $tmp_body"
 
 	# Make sure that all coefficients are present; otherwise exit
 	n_tmp=$(echo "$tmp_body" | tr -dc '0-9' | wc -c)
