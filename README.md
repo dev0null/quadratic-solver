@@ -11,20 +11,30 @@ It returns results based on the 𝚫(delta) value:
 - $\boldsymbol{𝚫 = 0}$: 1 solution (1 repeated real root)
 
 ## Installation
-Clone repository:
+
+[![GitHub](https://img.shields.io/badge/Clone_on-GitHub-blue?logo=github)](https://github.com/dev0null/quadratic-solver.git)
+[![Codeberg](https://img.shields.io/badge/Clone_on-Codeberg-orange?logo=codeberg)](https://codeberg.org/dev0null/quadratic-solver.git)
+
+
+Clone this repository from **GitHub**:
 ```sh
-git clone https://gitlab.com/dev0null/quadratic-equation-resolver
+git clone https://github.com/dev0null/quadratic-solver.git
 ```
+Clone this repository from **Codeberg**: 
+```sh
+git clone https://codeberg.org/dev0null/quadratic-solver.git
+```
+
 Make it executable:
 
 ```sh
-chmod +x eq-delta
+chmod +x quadratic-solver
 ```
 
 Run it:
 
 ```sh
-./eq-delta
+./quadratic-solver
 ```
 ---
 ## Equation formatting rules
