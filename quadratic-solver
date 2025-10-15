@@ -26,14 +26,14 @@ typewriter(){
 }
 
 print_results(){
-	printf "R1 = %.${scale}f\n" $root_1
-	printf "R2 = %.${scale}f\n" $root_2
 
 	if [ $delta -gt 0 ]; then
 		typewriter "Delta is POSITIVE. It means that there are 2 unique solutions"
 	else
 		typewriter "Delta is equal to ZERO. The solutions match (1 solution)"
 	fi
+	printf "R1 = %s\n" "$root_1"
+	printf "R2 = %s\n" "$root_2"
 }
 
 discriminant(){
@@ -54,8 +54,8 @@ discriminant(){
 
 calculate_roots(){
 	scale=6 # decimal places
-	root_1=$(echo "scale=${scale}; (-($b) + sqrt($delta)) / (2*$a)" | bc -l)
-	root_2=$(echo "scale=${scale}; (-($b) - sqrt($delta)) / (2*$a)" | bc -l)
+	root_1=$(echo "scale=${scale}; (-($b) + sqrt($delta)) / (2*$a)" | bc -l | tr -d '\\\n '|sed 's/^\(-*\)\./\10./')
+	root_2=$(echo "scale=${scale}; (-($b) - sqrt($delta)) / (2*$a)" | bc -l | tr -d '\\\n '|sed 's/^\(-*\)\./\10./')
 }
 
 dissect_body(){
